@@ -1,58 +1,103 @@
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
-import toast from "react-hot-toast";
+import { useAuth } from "../context/AuthContext";
 
-const Navbar = () => {
+// ↑ Notice: only ONE dot-dot (../context)
+// because Navbar is in src/components/
+// and context is in src/context/
+// They are SIBLINGS inside src/
+
+export default function Navbar() {
+  const [scrolled, setScrolled] = useState(false);
+  const { dark, toggle } = useTheme();
   const { user, logout } = useAuth();
-  const { darkMode, setDarkMode } = useTheme();
-  const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
-    toast.success("Logged out successfully");
-    navigate("/login");
-  };
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <nav className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 px-6 py-4">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
-        {/* Logo */}
-        <Link to="/dashboard" className="text-2xl font-bold text-blue-600">
-          📋 Planify
-        </Link>
+    <nav
+      className={`fixed top-0 left-0 right-0 z-50 px-10 py-4 flex items-center 
+      justify-between border-b border-white/[0.06] backdrop-blur-xl transition-all duration-300
+      ${scrolled ? "bg-[#030712]/90 shadow-2xl" : "bg-[#030712]/60"}`}
+    >
+      {/* Logo */}
+      <Link
+        to="/"
+        className="text-xl font-bold bg-gradient-to-r from-purple-500 to-blue-500
+          bg-clip-text text-transparent"
+      >
+        Planipy
+      </Link>
 
-        {/* Right side */}
-        <div className="flex items-center gap-3">
-          {/* Dark Mode Toggle */}
-          <button
-            onClick={() => setDarkMode(!darkMode)}
-            className="p-2 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition text-xl"
-          >
-            {darkMode ? "☀️" : "🌙"}
-          </button>
+      {/* Nav links */}
+      <ul className="hidden md:flex gap-8 list-none">
+        {["Features", "Analytics", "Pricing"].map((link) => (
+          <li key={link}>
+            <a
+              href={`#${link.toLowerCase()}`}
+              className="text-sm text-slate-400 hover:text-white transition-colors cursor-pointer"
+            >
+              {link}
+            </a>
+          </li>
+        ))}
+      </ul>
 
-          <span className="text-gray-600 dark:text-gray-300 font-medium">
-            👋 Hi, {user?.name}
-          </span>
+      {/* Right actions */}
+      <div className="flex items-center gap-3">
+        {/* Theme toggle */}
+        <button
+          onClick={toggle}
+          className="w-9 h-9 rounded-lg border border-white/[0.08] bg-white/[0.04]
+            flex items-center justify-center text-slate-400 hover:text-white
+            hover:border-purple-500/50 transition-all text-sm"
+        >
+          {dark ? "☀️" : "🌙"}
+        </button>
 
-          <Link
-            to="/profile"
-            className="text-gray-600 dark:text-gray-300 hover:text-blue-600 font-medium transition"
-          >
-            Profile
-          </Link>
-
-          <button
-            onClick={handleLogout}
-            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl font-medium transition"
-          >
-            Logout
-          </button>
-        </div>
+        {user ? (
+          <>
+            <Link
+              to="/dashboard"
+              className="text-sm font-medium text-slate-300 hover:text-white px-4 py-2
+                rounded-lg border border-white/[0.08] hover:border-purple-500/50 transition-all"
+            >
+              Dashboard
+            </Link>
+            <button
+              onClick={logout}
+              className="text-sm font-semibold px-5 py-2 rounded-lg bg-gradient-to-r
+                from-purple-700 to-blue-600 text-white transition-all
+                shadow-[0_0_20px_rgba(124,58,237,0.3)] hover:-translate-y-0.5"
+            >
+              Logout
+            </button>
+          </>
+        ) : (
+          <>
+            <Link
+              to="/login"
+              className="text-sm text-slate-400 hover:text-white px-4 py-2 rounded-lg
+                border border-white/[0.08] hover:border-purple-500/50 transition-all"
+            >
+              Sign in
+            </Link>
+            <Link
+              to="/signup"
+              className="text-sm font-semibold px-5 py-2 rounded-lg bg-gradient-to-r
+                from-purple-700 to-blue-600 text-white transition-all
+                shadow-[0_0_20px_rgba(124,58,237,0.3)] hover:-translate-y-0.5"
+            >
+              Get started
+            </Link>
+          </>
+        )}
       </div>
     </nav>
   );
-};
-
-export default Navbar;
+}

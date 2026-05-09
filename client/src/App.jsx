@@ -1,49 +1,40 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
-import { AuthProvider } from "./context/AuthContext";
 import { ThemeProvider } from "./context/ThemeContext";
-import ProtectedRoute from "./components/ProtectedRoute";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Dashboard from "./pages/Dashboard";
-import Profile from "./pages/Profile";
+import { AuthProvider } from "./context/AuthContext";
+import LandingPage from "./pages/LandingPage";
 
-function App() {
+// We'll add more pages here as we build them
+// import LoginPage   from './pages/LoginPage';
+// import SignupPage  from './pages/SignupPage';
+// import Dashboard   from './pages/Dashboard';
+
+export default function App() {
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <Router>
-          <Toaster position="top-right" />
+    <BrowserRouter>
+      <ThemeProvider>
+        <AuthProvider>
           <Routes>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/profile"
-              element={
-                <ProtectedRoute>
-                  <Profile />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/" element={<LandingPage />} />
+            {/* Uncomment these as you build each page: */}
+            {/* <Route path="/login"   element={<LoginPage />} /> */}
+            {/* <Route path="/signup"  element={<SignupPage />} /> */}
+            {/* <Route path="/dashboard" element={<Dashboard />} /> */}
           </Routes>
-        </Router>
-      </AuthProvider>
-    </ThemeProvider>
+
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              style: {
+                background: "#0f172a",
+                color: "#f1f5f9",
+                border: "1px solid rgba(255,255,255,0.08)",
+                borderRadius: "12px",
+              },
+            }}
+          />
+        </AuthProvider>
+      </ThemeProvider>
+    </BrowserRouter>
   );
 }
-
-export default App;

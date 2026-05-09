@@ -3,9 +3,2044 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Planify</title>
+    <title>Planify — Plan Smarter. Live Better.</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      :root {
+        --bg: #050508;
+        --bg2: #0a0a12;
+        --surface: #0f0f1a;
+        --surface2: #141428;
+        --border: rgba(255, 255, 255, 0.06);
+        --border2: rgba(255, 255, 255, 0.12);
+        --text: #f0f0f8;
+        --muted: rgba(240, 240, 248, 0.45);
+        --muted2: rgba(240, 240, 248, 0.25);
+        --purple: #7c6eff;
+        --purple2: #a78bfa;
+        --blue: #4f9eff;
+        --cyan: #22d3ee;
+        --glow: rgba(124, 110, 255, 0.15);
+        --glow2: rgba(79, 158, 255, 0.1);
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "DM Sans", sans-serif;
+        font-size: 16px;
+        line-height: 1.6;
+        overflow-x: hidden;
+        cursor: none;
+      }
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-family: "Syne", sans-serif;
+        line-height: 1.1;
+      }
+
+      /* CUSTOM CURSOR */
+      #cursor {
+        position: fixed;
+        width: 12px;
+        height: 12px;
+        background: var(--purple);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9999;
+        transform: translate(-50%, -50%);
+        transition:
+          transform 0.1s,
+          background 0.2s;
+        mix-blend-mode: screen;
+      }
+      #cursor-ring {
+        position: fixed;
+        width: 40px;
+        height: 40px;
+        border: 1px solid rgba(124, 110, 255, 0.4);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9998;
+        transform: translate(-50%, -50%);
+        transition: all 0.15s ease;
+      }
+      body:hover #cursor {
+        opacity: 1;
+      }
+
+      /* NOISE OVERLAY */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+        pointer-events: none;
+        z-index: 1;
+        opacity: 0.4;
+      }
+
+      /* NAV */
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        padding: 1.25rem 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: rgba(5, 5, 8, 0.6);
+        backdrop-filter: blur(24px);
+        border-bottom: 1px solid var(--border);
+        transition: all 0.3s;
+      }
+      .nav-logo {
+        font-family: "Syne", sans-serif;
+        font-size: 1.25rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--purple), var(--blue));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .nav-links {
+        display: flex;
+        gap: 2rem;
+        list-style: none;
+      }
+      .nav-links a {
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: color 0.2s;
+      }
+      .nav-links a:hover {
+        color: var(--text);
+      }
+      .nav-cta {
+        background: linear-gradient(135deg, var(--purple), var(--blue));
+        color: #fff;
+        border: none;
+        padding: 0.625rem 1.5rem;
+        border-radius: 100px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: none;
+        transition: all 0.3s;
+        letter-spacing: 0.01em;
+      }
+      .nav-cta:hover {
+        transform: scale(1.04);
+        box-shadow: 0 0 30px rgba(124, 110, 255, 0.4);
+      }
+
+      /* HERO */
+      .hero {
+        position: relative;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 8rem 2rem 4rem;
+        overflow: hidden;
+        text-align: center;
+      }
+      .hero-glow {
+        position: absolute;
+        top: 20%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 800px;
+        height: 500px;
+        background: radial-gradient(
+          ellipse at center,
+          rgba(124, 110, 255, 0.18) 0%,
+          rgba(79, 158, 255, 0.08) 40%,
+          transparent 70%
+        );
+        pointer-events: none;
+        animation: pulse-glow 4s ease-in-out infinite;
+      }
+      .hero-glow2 {
+        position: absolute;
+        top: 40%;
+        left: 20%;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(
+          ellipse,
+          rgba(34, 211, 238, 0.08) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+        animation: pulse-glow 6s ease-in-out infinite reverse;
+      }
+      @keyframes pulse-glow {
+        0%,
+        100% {
+          opacity: 0.6;
+          transform: translateX(-50%) scale(1);
+        }
+        50% {
+          opacity: 1;
+          transform: translateX(-50%) scale(1.05);
+        }
+      }
+      .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(124, 110, 255, 0.1);
+        border: 1px solid rgba(124, 110, 255, 0.2);
+        padding: 0.375rem 1rem;
+        border-radius: 100px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--purple2);
+        margin-bottom: 2rem;
+        animation: fade-up 0.8s ease both;
+      }
+      .badge-dot {
+        width: 6px;
+        height: 6px;
+        background: var(--purple);
+        border-radius: 50%;
+        animation: blink 2s ease-in-out infinite;
+      }
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.3;
+        }
+      }
+      .hero-title {
+        font-size: clamp(3rem, 8vw, 7rem);
+        font-weight: 800;
+        line-height: 1;
+        letter-spacing: -0.03em;
+        margin-bottom: 1.5rem;
+        animation: fade-up 0.8s ease 0.1s both;
+      }
+      .gradient-text {
+        background: linear-gradient(
+          135deg,
+          #fff 0%,
+          var(--purple2) 40%,
+          var(--blue) 70%,
+          var(--cyan) 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .hero-sub {
+        font-size: clamp(1rem, 2vw, 1.25rem);
+        color: var(--muted);
+        max-width: 560px;
+        margin: 0 auto 2.5rem;
+        font-weight: 300;
+        animation: fade-up 0.8s ease 0.2s both;
+      }
+      .hero-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        animation: fade-up 0.8s ease 0.3s both;
+        margin-bottom: 4rem;
+      }
+      .btn-primary {
+        background: linear-gradient(135deg, var(--purple), var(--blue));
+        color: #fff;
+        border: none;
+        padding: 0.875rem 2rem;
+        border-radius: 100px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: none;
+        transition: all 0.3s;
+        position: relative;
+        overflow: hidden;
+      }
+      .btn-primary::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, var(--blue), var(--cyan));
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .btn-primary:hover::before {
+        opacity: 1;
+      }
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 20px 60px rgba(124, 110, 255, 0.35);
+      }
+      .btn-primary span {
+        position: relative;
+        z-index: 1;
+      }
+      .btn-ghost {
+        background: transparent;
+        color: var(--text);
+        border: 1px solid var(--border2);
+        padding: 0.875rem 2rem;
+        border-radius: 100px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: none;
+        transition: all 0.3s;
+      }
+      .btn-ghost:hover {
+        background: var(--surface);
+        border-color: var(--purple);
+        color: var(--purple2);
+      }
+
+      /* FLOATING CARDS */
+      .floating-cards {
+        position: relative;
+        width: 100%;
+        max-width: 900px;
+        animation: fade-up 0.8s ease 0.4s both;
+      }
+      .dashboard-frame {
+        background: var(--surface);
+        border: 1px solid var(--border2);
+        border-radius: 24px;
+        overflow: hidden;
+        position: relative;
+        box-shadow:
+          0 0 0 1px rgba(255, 255, 255, 0.05),
+          0 80px 120px rgba(0, 0, 0, 0.6),
+          0 0 80px rgba(124, 110, 255, 0.1);
+      }
+      .frame-bar {
+        background: var(--surface2);
+        padding: 0.875rem 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border-bottom: 1px solid var(--border);
+      }
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
+      .dot-r {
+        background: #ff5f57;
+      }
+      .dot-y {
+        background: #febc2e;
+      }
+      .dot-g {
+        background: #28c840;
+      }
+      .frame-title {
+        font-size: 0.75rem;
+        color: var(--muted2);
+        margin-left: auto;
+        margin-right: auto;
+        font-family: "Syne", sans-serif;
+        letter-spacing: 0.08em;
+      }
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: 220px 1fr;
+        min-height: 440px;
+      }
+      .sidebar {
+        background: rgba(10, 10, 18, 0.8);
+        border-right: 1px solid var(--border);
+        padding: 1.25rem;
+      }
+      .sidebar-logo {
+        font-family: "Syne", sans-serif;
+        font-weight: 800;
+        font-size: 0.9rem;
+        color: var(--purple2);
+        margin-bottom: 1.5rem;
+      }
+      .sidebar-section {
+        font-size: 0.65rem;
+        color: var(--muted2);
+        letter-spacing: 0.1em;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+      }
+      .sidebar-item {
+        display: flex;
+        align-items: center;
+        gap: 0.625rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: 10px;
+        font-size: 0.8rem;
+        color: var(--muted);
+        margin-bottom: 0.25rem;
+        transition: all 0.2s;
+        cursor: none;
+      }
+      .sidebar-item.active {
+        background: rgba(124, 110, 255, 0.12);
+        color: var(--purple2);
+      }
+      .sidebar-item:hover:not(.active) {
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--text);
+      }
+      .sidebar-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .main-dash {
+        padding: 1.5rem;
+        overflow: hidden;
+      }
+      .dash-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.25rem;
+      }
+      .dash-title {
+        font-family: "Syne", sans-serif;
+        font-size: 1.1rem;
+        font-weight: 700;
+      }
+      .dash-date {
+        font-size: 0.75rem;
+        color: var(--muted);
+        background: var(--surface2);
+        padding: 0.25rem 0.75rem;
+        border-radius: 100px;
+        border: 1px solid var(--border);
+      }
+      .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem;
+        margin-bottom: 1.25rem;
+      }
+      .stat-card {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 0.875rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .stat-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: var(--card-glow, transparent);
+        opacity: 0.5;
+      }
+      .stat-card.purple {
+        --card-glow: linear-gradient(
+          135deg,
+          rgba(124, 110, 255, 0.08),
+          transparent
+        );
+      }
+      .stat-card.blue {
+        --card-glow: linear-gradient(
+          135deg,
+          rgba(79, 158, 255, 0.08),
+          transparent
+        );
+      }
+      .stat-card.cyan {
+        --card-glow: linear-gradient(
+          135deg,
+          rgba(34, 211, 238, 0.08),
+          transparent
+        );
+      }
+      .stat-label {
+        font-size: 0.65rem;
+        color: var(--muted);
+        margin-bottom: 0.25rem;
+        font-weight: 500;
+      }
+      .stat-value {
+        font-family: "Syne", sans-serif;
+        font-size: 1.5rem;
+        font-weight: 800;
+        position: relative;
+      }
+      .stat-sub {
+        font-size: 0.65rem;
+        color: var(--muted2);
+        margin-top: 0.125rem;
+        position: relative;
+      }
+      .stat-badge {
+        display: inline-block;
+        font-size: 0.6rem;
+        padding: 0.125rem 0.375rem;
+        border-radius: 100px;
+        margin-left: 0.375rem;
+        font-weight: 600;
+      }
+      .stat-badge.up {
+        background: rgba(34, 211, 238, 0.1);
+        color: var(--cyan);
+      }
+      .kanban {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem;
+      }
+      .kanban-col {
+      }
+      .kanban-header {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: var(--muted);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        margin-bottom: 0.625rem;
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+      }
+      .k-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+      }
+      .task-card {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
+        transition: all 0.2s;
+        cursor: none;
+      }
+      .task-card:hover {
+        border-color: var(--border2);
+        transform: translateY(-1px);
+      }
+      .task-title {
+        font-size: 0.75rem;
+        font-weight: 500;
+        margin-bottom: 0.375rem;
+        color: var(--text);
+      }
+      .task-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .task-tag {
+        font-size: 0.6rem;
+        padding: 0.125rem 0.375rem;
+        border-radius: 100px;
+        font-weight: 500;
+      }
+      .tag-purple {
+        background: rgba(124, 110, 255, 0.12);
+        color: var(--purple2);
+      }
+      .tag-blue {
+        background: rgba(79, 158, 255, 0.12);
+        color: var(--blue);
+      }
+      .tag-cyan {
+        background: rgba(34, 211, 238, 0.12);
+        color: var(--cyan);
+      }
+      .task-ava {
+        display: flex;
+      }
+      .ava {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        border: 1px solid var(--bg);
+        margin-left: -4px;
+      }
+
+      /* FLOATING ELEMENTS */
+      .float-card {
+        position: absolute;
+        background: var(--surface);
+        border: 1px solid var(--border2);
+        border-radius: 16px;
+        padding: 1rem;
+        box-shadow:
+          0 20px 60px rgba(0, 0, 0, 0.5),
+          0 0 40px rgba(124, 110, 255, 0.08);
+      }
+      .float-1 {
+        top: -40px;
+        right: -60px;
+        width: 200px;
+        animation: float1 5s ease-in-out infinite;
+      }
+      .float-2 {
+        bottom: -30px;
+        left: -50px;
+        width: 180px;
+        animation: float2 6s ease-in-out infinite;
+      }
+      @keyframes float1 {
+        0%,
+        100% {
+          transform: translateY(0) rotate(-2deg);
+        }
+        50% {
+          transform: translateY(-12px) rotate(2deg);
+        }
+      }
+      @keyframes float2 {
+        0%,
+        100% {
+          transform: translateY(0) rotate(3deg);
+        }
+        50% {
+          transform: translateY(-10px) rotate(-1deg);
+        }
+      }
+      .float-title {
+        font-size: 0.7rem;
+        font-weight: 600;
+        margin-bottom: 0.375rem;
+        color: var(--muted);
+      }
+      .progress-bar {
+        height: 4px;
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 100px;
+        overflow: hidden;
+        margin: 0.25rem 0;
+      }
+      .progress-fill {
+        height: 100%;
+        border-radius: 100px;
+        background: linear-gradient(90deg, var(--purple), var(--blue));
+      }
+
+      @keyframes fade-up {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* SCROLL ANIMATIONS */
+      .reveal {
+        opacity: 0;
+        transform: translateY(40px);
+        transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .reveal.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .reveal-delay-1 {
+        transition-delay: 0.1s;
+      }
+      .reveal-delay-2 {
+        transition-delay: 0.2s;
+      }
+      .reveal-delay-3 {
+        transition-delay: 0.3s;
+      }
+
+      /* SECTIONS */
+      section {
+        position: relative;
+        z-index: 2;
+      }
+      .section-pad {
+        padding: 8rem 2rem;
+      }
+      .container {
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+      .section-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--purple2);
+        margin-bottom: 1.25rem;
+      }
+      .section-tag::before {
+        content: "";
+        width: 20px;
+        height: 1px;
+        background: var(--purple);
+      }
+      .section-title {
+        font-size: clamp(2.25rem, 4vw, 3.5rem);
+        font-weight: 800;
+        margin-bottom: 1rem;
+        letter-spacing: -0.02em;
+      }
+      .section-sub {
+        font-size: 1.1rem;
+        color: var(--muted);
+        max-width: 540px;
+        font-weight: 300;
+      }
+
+      /* MARQUEE */
+      .marquee-section {
+        padding: 3rem 0;
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+        overflow: hidden;
+        background: rgba(10, 10, 18, 0.5);
+      }
+      .marquee-track {
+        display: flex;
+        gap: 3rem;
+        white-space: nowrap;
+        animation: marquee 25s linear infinite;
+      }
+      .marquee-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-family: "Syne", sans-serif;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--muted2);
+        flex-shrink: 0;
+      }
+      .marquee-item span {
+        color: var(--purple);
+        font-size: 1.25rem;
+      }
+      @keyframes marquee {
+        from {
+          transform: translateX(0);
+        }
+        to {
+          transform: translateX(-50%);
+        }
+      }
+
+      /* FEATURES */
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        margin-top: 4rem;
+      }
+      .feature-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 2rem;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+        overflow: hidden;
+      }
+      .feature-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          circle at 50% 0%,
+          rgba(124, 110, 255, 0.08),
+          transparent 60%
+        );
+        opacity: 0;
+        transition: opacity 0.4s;
+      }
+      .feature-card:hover {
+        border-color: rgba(124, 110, 255, 0.3);
+        transform: translateY(-6px);
+      }
+      .feature-card:hover::before {
+        opacity: 1;
+      }
+      .feature-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        background: linear-gradient(
+          135deg,
+          rgba(124, 110, 255, 0.2),
+          rgba(79, 158, 255, 0.1)
+        );
+        border: 1px solid rgba(124, 110, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        margin-bottom: 1.25rem;
+      }
+      .feature-title {
+        font-family: "Syne", sans-serif;
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 0.625rem;
+      }
+      .feature-desc {
+        font-size: 0.875rem;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      /* ANALYTICS */
+      .analytics-section {
+        background: linear-gradient(
+          180deg,
+          transparent,
+          rgba(124, 110, 255, 0.03),
+          transparent
+        );
+      }
+      .analytics-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: center;
+        margin-top: 4rem;
+      }
+      .chart-container {
+        background: var(--surface);
+        border: 1px solid var(--border2);
+        border-radius: 24px;
+        padding: 1.5rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .chart-bars {
+        display: flex;
+        align-items: flex-end;
+        gap: 0.75rem;
+        height: 160px;
+        margin-top: 1rem;
+      }
+      .bar-wrap {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .bar {
+        width: 100%;
+        border-radius: 6px 6px 0 0;
+        background: linear-gradient(
+          180deg,
+          var(--purple),
+          rgba(124, 110, 255, 0.3)
+        );
+        animation: bar-grow 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+      }
+      @keyframes bar-grow {
+        from {
+          transform: scaleY(0);
+          transform-origin: bottom;
+        }
+        to {
+          transform: scaleY(1);
+          transform-origin: bottom;
+        }
+      }
+      .bar-label {
+        font-size: 0.65rem;
+        color: var(--muted2);
+      }
+      .rings {
+        display: flex;
+        gap: 1.5rem;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+      }
+      .ring-item {
+        text-align: center;
+      }
+      .ring-label {
+        font-size: 0.75rem;
+        color: var(--muted);
+        margin-top: 0.5rem;
+      }
+      .ring-val {
+        font-family: "Syne", sans-serif;
+        font-size: 1rem;
+        font-weight: 700;
+      }
+      .analytics-stats {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+      .a-stat {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      .a-stat-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 16px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+      }
+      .a-stat-label {
+        font-size: 0.8rem;
+        color: var(--muted);
+        margin-bottom: 0.25rem;
+      }
+      .a-stat-val {
+        font-family: "Syne", sans-serif;
+        font-size: 1.5rem;
+        font-weight: 800;
+      }
+
+      /* TESTIMONIALS */
+      .testi-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        margin-top: 4rem;
+      }
+      .testi-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 1.75rem;
+        transition: all 0.3s;
+      }
+      .testi-card:hover {
+        border-color: var(--border2);
+        transform: translateY(-4px);
+      }
+      .testi-quote {
+        font-size: 0.9rem;
+        color: var(--muted);
+        line-height: 1.8;
+        margin-bottom: 1.5rem;
+        font-style: italic;
+      }
+      .testi-author {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .author-ava {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Syne", sans-serif;
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+      .author-name {
+        font-size: 0.875rem;
+        font-weight: 600;
+      }
+      .author-role {
+        font-size: 0.75rem;
+        color: var(--muted);
+      }
+      .stars {
+        color: #fbbf24;
+        font-size: 0.7rem;
+        margin-bottom: 0.75rem;
+      }
+
+      /* PRICING */
+      .pricing-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        margin-top: 4rem;
+      }
+      .pricing-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 2rem;
+        position: relative;
+        transition: all 0.4s;
+      }
+      .pricing-card.featured {
+        background: linear-gradient(
+          135deg,
+          rgba(124, 110, 255, 0.1),
+          rgba(79, 158, 255, 0.05)
+        );
+        border-color: rgba(124, 110, 255, 0.4);
+        box-shadow: 0 0 60px rgba(124, 110, 255, 0.12);
+      }
+      .pricing-card:hover {
+        transform: translateY(-4px);
+      }
+      .featured-badge {
+        position: absolute;
+        top: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(135deg, var(--purple), var(--blue));
+        color: #fff;
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 0.25rem 1rem;
+        border-radius: 100px;
+        letter-spacing: 0.05em;
+        white-space: nowrap;
+      }
+      .price-plan {
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 0.75rem;
+      }
+      .price-amount {
+        font-family: "Syne", sans-serif;
+        font-size: 3rem;
+        font-weight: 800;
+        line-height: 1;
+        margin-bottom: 0.25rem;
+      }
+      .price-period {
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+      .price-desc {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin: 1rem 0 1.5rem;
+        border-top: 1px solid var(--border);
+        padding-top: 1rem;
+      }
+      .price-features {
+        list-style: none;
+        margin-bottom: 1.5rem;
+      }
+      .price-features li {
+        font-size: 0.85rem;
+        color: var(--muted);
+        padding: 0.375rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .price-features li::before {
+        content: "✦";
+        color: var(--purple);
+        font-size: 0.6rem;
+        flex-shrink: 0;
+      }
+      .price-btn {
+        width: 100%;
+        padding: 0.75rem;
+        border-radius: 100px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: none;
+        transition: all 0.3s;
+        border: 1px solid var(--border2);
+        background: transparent;
+        color: var(--text);
+      }
+      .price-btn.featured-btn {
+        background: linear-gradient(135deg, var(--purple), var(--blue));
+        border: none;
+        color: #fff;
+      }
+      .price-btn:hover {
+        transform: scale(1.02);
+      }
+      .price-btn.featured-btn:hover {
+        box-shadow: 0 10px 40px rgba(124, 110, 255, 0.3);
+      }
+
+      /* CTA */
+      .cta-section {
+        padding: 8rem 2rem;
+        text-align: center;
+      }
+      .cta-box {
+        max-width: 800px;
+        margin: 0 auto;
+        background: var(--surface);
+        border: 1px solid rgba(124, 110, 255, 0.2);
+        border-radius: 32px;
+        padding: 5rem 3rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .cta-box::before {
+        content: "";
+        position: absolute;
+        top: -100px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 500px;
+        height: 300px;
+        background: radial-gradient(
+          ellipse,
+          rgba(124, 110, 255, 0.15),
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+      .cta-title {
+        font-size: clamp(2rem, 4vw, 3.5rem);
+        font-weight: 800;
+        margin-bottom: 1rem;
+        letter-spacing: -0.02em;
+      }
+      .cta-sub {
+        font-size: 1.1rem;
+        color: var(--muted);
+        margin-bottom: 2.5rem;
+        font-weight: 300;
+      }
+
+      /* FOOTER */
+      footer {
+        border-top: 1px solid var(--border);
+        padding: 3rem 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+      .footer-logo {
+        font-family: "Syne", sans-serif;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--purple), var(--blue));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .footer-links {
+        display: flex;
+        gap: 2rem;
+      }
+      .footer-links a {
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 0.85rem;
+        transition: color 0.2s;
+      }
+      .footer-links a:hover {
+        color: var(--text);
+      }
+      .footer-copy {
+        font-size: 0.8rem;
+        color: var(--muted2);
+      }
+
+      /* RING SVG */
+      .ring-svg {
+        display: block;
+        margin: 0 auto;
+      }
+
+      /* MOUSE GLOW */
+      #mouse-glow {
+        position: fixed;
+        pointer-events: none;
+        z-index: 0;
+        width: 600px;
+        height: 600px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(124, 110, 255, 0.06),
+          transparent 60%
+        );
+        transform: translate(-50%, -50%);
+        transition: all 0.4s ease;
+      }
+
+      /* GRID BG */
+      .grid-bg {
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+        background-size: 80px 80px;
+        pointer-events: none;
+      }
+
+      @media (max-width: 900px) {
+        .features-grid,
+        .testi-grid,
+        .pricing-grid {
+          grid-template-columns: 1fr;
+        }
+        .analytics-layout,
+        .dashboard-grid {
+          grid-template-columns: 1fr;
+        }
+        .sidebar {
+          display: none;
+        }
+        .stat-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .kanban {
+          grid-template-columns: 1fr;
+        }
+        .float-1,
+        .float-2 {
+          display: none;
+        }
+        .nav-links {
+          display: none;
+        }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="cursor"></div>
+    <div id="cursor-ring"></div>
+    <div id="mouse-glow"></div>
+
+    <!-- NAV -->
+    <nav id="navbar">
+      <div class="nav-logo">✦ Planify</div>
+      <ul class="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#analytics">Analytics</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#testimonials">Reviews</a></li>
+      </ul>
+      <button class="nav-cta">Start free →</button>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-glow"></div>
+      <div class="hero-glow2"></div>
+      <div class="grid-bg"></div>
+
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        Now with AI-powered task prediction
+      </div>
+
+      <h1 class="hero-title">
+        Plan smarter.<br /><span class="gradient-text">Ship faster.</span>
+      </h1>
+      <p class="hero-sub">
+        The premium task management platform built for modern teams. Cinematic
+        UI. Zero friction. Maximum output.
+      </p>
+
+      <div class="hero-actions">
+        <button class="btn-primary"><span>Get started free →</span></button>
+        <button class="btn-ghost">Watch demo ▷</button>
+      </div>
+
+      <!-- Dashboard mockup -->
+      <div class="floating-cards reveal">
+        <!-- Float cards -->
+        <div class="float-card float-1">
+          <div class="float-title">Sprint Progress</div>
+          <div
+            style="
+              font-family: &quot;Syne&quot;, sans-serif;
+              font-size: 1.5rem;
+              font-weight: 800;
+              color: var(--purple2);
+            "
+          >
+            78%
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 78%"></div>
+          </div>
+          <div
+            style="
+              font-size: 0.65rem;
+              color: var(--muted2);
+              margin-top: 0.375rem;
+            "
+          >
+            14 of 18 tasks complete
+          </div>
+        </div>
+        <div class="float-card float-2">
+          <div class="float-title">Tasks Today</div>
+          <div style="display: flex; gap: 0.5rem; margin-top: 0.25rem">
+            <div
+              style="
+                font-family: &quot;Syne&quot;, sans-serif;
+                font-size: 1.25rem;
+                font-weight: 800;
+              "
+            >
+              12
+            </div>
+            <div
+              style="font-size: 0.7rem; color: var(--cyan); margin-top: 0.25rem"
+            >
+              ↑ 3 new
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-frame">
+          <div class="frame-bar">
+            <div class="dot dot-r"></div>
+            <div class="dot dot-y"></div>
+            <div class="dot dot-g"></div>
+            <div class="frame-title">Planify — Dashboard</div>
+          </div>
+          <div class="dashboard-grid">
+            <div class="sidebar">
+              <div class="sidebar-logo">✦ Planify</div>
+              <div class="sidebar-section">Workspace</div>
+              <div class="sidebar-item active">
+                <div
+                  class="sidebar-dot"
+                  style="background: var(--purple)"
+                ></div>
+                Dashboard
+              </div>
+              <div class="sidebar-item">
+                <div class="sidebar-dot" style="background: var(--blue)"></div>
+                My Tasks
+              </div>
+              <div class="sidebar-item">
+                <div class="sidebar-dot" style="background: var(--cyan)"></div>
+                Projects
+              </div>
+              <div class="sidebar-item">
+                <div class="sidebar-dot" style="background: #f59e0b"></div>
+                Calendar
+              </div>
+              <div class="sidebar-item">
+                <div class="sidebar-dot" style="background: #ec4899"></div>
+                Analytics
+              </div>
+              <br />
+              <div class="sidebar-section">Team</div>
+              <div class="sidebar-item">
+                <div
+                  class="sidebar-dot"
+                  style="background: var(--muted2)"
+                ></div>
+                Design
+              </div>
+              <div class="sidebar-item">
+                <div
+                  class="sidebar-dot"
+                  style="background: var(--muted2)"
+                ></div>
+                Engineering
+              </div>
+              <div class="sidebar-item">
+                <div
+                  class="sidebar-dot"
+                  style="background: var(--muted2)"
+                ></div>
+                Marketing
+              </div>
+            </div>
+            <div class="main-dash">
+              <div class="dash-header">
+                <div class="dash-title">Good morning, Sanju ✦</div>
+                <div class="dash-date">May 2026</div>
+              </div>
+              <div class="stat-grid">
+                <div class="stat-card purple">
+                  <div class="stat-label">Total Tasks</div>
+                  <div class="stat-value">
+                    48<span class="stat-badge up">↑12%</span>
+                  </div>
+                  <div class="stat-sub">Across 6 projects</div>
+                </div>
+                <div class="stat-card blue">
+                  <div class="stat-label">Completed</div>
+                  <div class="stat-value">31</div>
+                  <div class="stat-sub">64% completion rate</div>
+                </div>
+                <div class="stat-card cyan">
+                  <div class="stat-label">On Track</div>
+                  <div class="stat-value">94%</div>
+                  <div class="stat-sub">All deadlines met</div>
+                </div>
+              </div>
+              <div class="kanban">
+                <div class="kanban-col">
+                  <div class="kanban-header">
+                    <div class="k-dot" style="background: #64748b"></div>
+                    Todo
+                  </div>
+                  <div class="task-card">
+                    <div class="task-title">Design system update</div>
+                    <div class="task-meta">
+                      <div class="task-tag tag-purple">Design</div>
+                    </div>
+                  </div>
+                  <div class="task-card">
+                    <div class="task-title">API documentation</div>
+                    <div class="task-meta">
+                      <div class="task-tag tag-blue">Docs</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="kanban-col">
+                  <div class="kanban-header">
+                    <div class="k-dot" style="background: var(--blue)"></div>
+                    In Progress
+                  </div>
+                  <div
+                    class="task-card"
+                    style="border-color: rgba(124, 110, 255, 0.3)"
+                  >
+                    <div class="task-title">Dashboard UI redesign</div>
+                    <div class="task-meta">
+                      <div class="task-tag tag-purple">UI/UX</div>
+                    </div>
+                  </div>
+                  <div class="task-card">
+                    <div class="task-title">Performance audit</div>
+                    <div class="task-meta">
+                      <div class="task-tag tag-cyan">Dev</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="kanban-col">
+                  <div class="kanban-header">
+                    <div class="k-dot" style="background: var(--cyan)"></div>
+                    Done
+                  </div>
+                  <div class="task-card" style="opacity: 0.6">
+                    <div class="task-title">User research</div>
+                    <div class="task-meta">
+                      <div class="task-tag tag-cyan">Research</div>
+                    </div>
+                  </div>
+                  <div class="task-card" style="opacity: 0.6">
+                    <div class="task-title">Sprint planning</div>
+                    <div class="task-meta">
+                      <div class="task-tag tag-purple">Planning</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MARQUEE -->
+    <div class="marquee-section">
+      <div class="marquee-track" id="marquee">
+        <div class="marquee-item"><span>✦</span> AI Task Prediction</div>
+        <div class="marquee-item"><span>✦</span> Kanban Boards</div>
+        <div class="marquee-item"><span>✦</span> Smart Deadlines</div>
+        <div class="marquee-item"><span>✦</span> Team Collaboration</div>
+        <div class="marquee-item"><span>✦</span> Real-time Sync</div>
+        <div class="marquee-item"><span>✦</span> Dark Mode</div>
+        <div class="marquee-item"><span>✦</span> Analytics Dashboard</div>
+        <div class="marquee-item"><span>✦</span> Priority Matrix</div>
+        <div class="marquee-item"><span>✦</span> AI Task Prediction</div>
+        <div class="marquee-item"><span>✦</span> Kanban Boards</div>
+        <div class="marquee-item"><span>✦</span> Smart Deadlines</div>
+        <div class="marquee-item"><span>✦</span> Team Collaboration</div>
+        <div class="marquee-item"><span>✦</span> Real-time Sync</div>
+        <div class="marquee-item"><span>✦</span> Dark Mode</div>
+        <div class="marquee-item"><span>✦</span> Analytics Dashboard</div>
+        <div class="marquee-item"><span>✦</span> Priority Matrix</div>
+      </div>
+    </div>
+
+    <!-- FEATURES -->
+    <section id="features" class="section-pad">
+      <div class="container">
+        <div class="reveal">
+          <div class="section-tag">Features</div>
+          <h2 class="section-title">
+            Everything you need.<br /><span class="gradient-text"
+              >Nothing you don't.</span
+            >
+          </h2>
+          <p class="section-sub">
+            Built for makers, creators, and teams who move fast and build great
+            things.
+          </p>
+        </div>
+        <div class="features-grid">
+          <div class="feature-card reveal reveal-delay-1">
+            <div class="feature-icon">⚡</div>
+            <div class="feature-title">Lightning Fast</div>
+            <p class="feature-desc">
+              Sub-100ms interactions. Instant task creation. Zero loading
+              states. Your workflow, uninterrupted.
+            </p>
+          </div>
+          <div class="feature-card reveal reveal-delay-2">
+            <div class="feature-icon">🧠</div>
+            <div class="feature-title">AI Assistant</div>
+            <p class="feature-desc">
+              Smart task suggestions, deadline predictions, and workload
+              balancing powered by advanced AI.
+            </p>
+          </div>
+          <div class="feature-card reveal reveal-delay-3">
+            <div class="feature-icon">🎯</div>
+            <div class="feature-title">Priority Matrix</div>
+            <p class="feature-desc">
+              Automatically rank tasks by impact and urgency. Always know what
+              to work on next.
+            </p>
+          </div>
+          <div class="feature-card reveal reveal-delay-1">
+            <div class="feature-icon">📊</div>
+            <div class="feature-title">Rich Analytics</div>
+            <p class="feature-desc">
+              Beautiful charts, velocity tracking, and productivity insights
+              that actually make sense.
+            </p>
+          </div>
+          <div class="feature-card reveal reveal-delay-2">
+            <div class="feature-icon">🔄</div>
+            <div class="feature-title">Real-time Sync</div>
+            <p class="feature-desc">
+              Every change syncs instantly across all devices and teammates.
+              Never out of date.
+            </p>
+          </div>
+          <div class="feature-card reveal reveal-delay-3">
+            <div class="feature-icon">🌙</div>
+            <div class="feature-title">Cinematic Dark Mode</div>
+            <p class="feature-desc">
+              A dark theme so beautiful you'll actually want to work. Designed
+              pixel by pixel.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ANALYTICS -->
+    <section id="analytics" class="section-pad analytics-section">
+      <div class="container">
+        <div class="reveal">
+          <div class="section-tag">Analytics</div>
+          <h2 class="section-title">
+            Your productivity,<br /><span class="gradient-text"
+              >visualized beautifully.</span
+            >
+          </h2>
+        </div>
+        <div class="analytics-layout">
+          <div class="chart-container reveal">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+              "
+            >
+              <div
+                style="
+                  font-family: &quot;Syne&quot;, sans-serif;
+                  font-size: 0.9rem;
+                  font-weight: 700;
+                "
+              >
+                Weekly Output
+              </div>
+              <div style="font-size: 0.7rem; color: var(--cyan)">
+                ↑ 23% this week
+              </div>
+            </div>
+            <div class="chart-bars">
+              <div class="bar-wrap">
+                <div
+                  class="bar"
+                  style="height: 60%; animation-delay: 0.1s"
+                ></div>
+                <div class="bar-label">Mon</div>
+              </div>
+              <div class="bar-wrap">
+                <div
+                  class="bar"
+                  style="
+                    height: 80%;
+                    animation-delay: 0.2s;
+                    background: linear-gradient(
+                      180deg,
+                      var(--blue),
+                      rgba(79, 158, 255, 0.3)
+                    );
+                  "
+                ></div>
+                <div class="bar-label">Tue</div>
+              </div>
+              <div class="bar-wrap">
+                <div
+                  class="bar"
+                  style="height: 45%; animation-delay: 0.3s"
+                ></div>
+                <div class="bar-label">Wed</div>
+              </div>
+              <div class="bar-wrap">
+                <div
+                  class="bar"
+                  style="
+                    height: 90%;
+                    animation-delay: 0.4s;
+                    background: linear-gradient(
+                      180deg,
+                      var(--cyan),
+                      rgba(34, 211, 238, 0.3)
+                    );
+                  "
+                ></div>
+                <div class="bar-label">Thu</div>
+              </div>
+              <div class="bar-wrap">
+                <div
+                  class="bar"
+                  style="height: 70%; animation-delay: 0.5s"
+                ></div>
+                <div class="bar-label">Fri</div>
+              </div>
+              <div class="bar-wrap">
+                <div
+                  class="bar"
+                  style="
+                    height: 40%;
+                    animation-delay: 0.6s;
+                    background: linear-gradient(
+                      180deg,
+                      var(--blue),
+                      rgba(79, 158, 255, 0.3)
+                    );
+                  "
+                ></div>
+                <div class="bar-label">Sat</div>
+              </div>
+              <div class="bar-wrap">
+                <div
+                  class="bar"
+                  style="height: 55%; animation-delay: 0.7s"
+                ></div>
+                <div class="bar-label">Sun</div>
+              </div>
+            </div>
+            <div
+              style="
+                display: flex;
+                gap: 1.5rem;
+                margin-top: 1.5rem;
+                padding-top: 1rem;
+                border-top: 1px solid var(--border);
+              "
+            >
+              <div>
+                <div style="font-size: 0.65rem; color: var(--muted)">
+                  Avg. Tasks/Day
+                </div>
+                <div
+                  style="
+                    font-family: &quot;Syne&quot;, sans-serif;
+                    font-weight: 800;
+                    font-size: 1.25rem;
+                  "
+                >
+                  8.4
+                </div>
+              </div>
+              <div>
+                <div style="font-size: 0.65rem; color: var(--muted)">
+                  Best Day
+                </div>
+                <div
+                  style="
+                    font-family: &quot;Syne&quot;, sans-serif;
+                    font-weight: 800;
+                    font-size: 1.25rem;
+                    color: var(--cyan);
+                  "
+                >
+                  Thu
+                </div>
+              </div>
+              <div>
+                <div style="font-size: 0.65rem; color: var(--muted)">
+                  Streak
+                </div>
+                <div
+                  style="
+                    font-family: &quot;Syne&quot;, sans-serif;
+                    font-weight: 800;
+                    font-size: 1.25rem;
+                    color: var(--purple2);
+                  "
+                >
+                  12 days 🔥
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="analytics-stats reveal reveal-delay-2">
+            <div class="a-stat">
+              <div
+                class="a-stat-icon"
+                style="
+                  background: rgba(124, 110, 255, 0.1);
+                  border: 1px solid rgba(124, 110, 255, 0.2);
+                "
+              >
+                ⚡
+              </div>
+              <div>
+                <div class="a-stat-label">Productivity Score</div>
+                <div class="a-stat-val" style="color: var(--purple2)">
+                  94 / 100
+                </div>
+              </div>
+            </div>
+            <div class="a-stat">
+              <div
+                class="a-stat-icon"
+                style="
+                  background: rgba(79, 158, 255, 0.1);
+                  border: 1px solid rgba(79, 158, 255, 0.2);
+                "
+              >
+                🎯
+              </div>
+              <div>
+                <div class="a-stat-label">Goals Achieved</div>
+                <div class="a-stat-val" style="color: var(--blue)">87%</div>
+              </div>
+            </div>
+            <div class="a-stat">
+              <div
+                class="a-stat-icon"
+                style="
+                  background: rgba(34, 211, 238, 0.1);
+                  border: 1px solid rgba(34, 211, 238, 0.2);
+                "
+              >
+                📈
+              </div>
+              <div>
+                <div class="a-stat-label">Growth This Month</div>
+                <div class="a-stat-val" style="color: var(--cyan)">+31%</div>
+              </div>
+            </div>
+            <div class="a-stat">
+              <div
+                class="a-stat-icon"
+                style="
+                  background: rgba(251, 191, 36, 0.1);
+                  border: 1px solid rgba(251, 191, 36, 0.2);
+                "
+              >
+                🔥
+              </div>
+              <div>
+                <div class="a-stat-label">Current Streak</div>
+                <div class="a-stat-val" style="color: #fbbf24">12 Days</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section id="testimonials" class="section-pad">
+      <div class="container">
+        <div class="reveal" style="text-align: center; margin-bottom: 0">
+          <div class="section-tag" style="justify-content: center">
+            Testimonials
+          </div>
+          <h2 class="section-title">
+            Loved by <span class="gradient-text">50,000+ teams</span>
+          </h2>
+        </div>
+        <div class="testi-grid">
+          <div class="testi-card reveal reveal-delay-1">
+            <div class="stars">★★★★★</div>
+            <div class="testi-quote">
+              "Planify completely transformed how our team operates. The UI is
+              absolutely stunning and the AI suggestions are eerily accurate."
+            </div>
+            <div class="testi-author">
+              <div
+                class="author-ava"
+                style="
+                  background: rgba(124, 110, 255, 0.2);
+                  color: var(--purple2);
+                "
+              >
+                AK
+              </div>
+              <div>
+                <div class="author-name">Arjun Kumar</div>
+                <div class="author-role">CTO at NexaCloud</div>
+              </div>
+            </div>
+          </div>
+          <div class="testi-card reveal reveal-delay-2">
+            <div class="stars">★★★★★</div>
+            <div class="testi-quote">
+              "I've tried every task app out there. Nothing comes close to
+              Planify's design quality. It feels like using a product from the
+              future."
+            </div>
+            <div class="testi-author">
+              <div
+                class="author-ava"
+                style="background: rgba(79, 158, 255, 0.2); color: var(--blue)"
+              >
+                SP
+              </div>
+              <div>
+                <div class="author-name">Sara Patel</div>
+                <div class="author-role">Product Lead at Scale</div>
+              </div>
+            </div>
+          </div>
+          <div class="testi-card reveal reveal-delay-3">
+            <div class="stars">★★★★★</div>
+            <div class="testi-quote">
+              "The analytics alone are worth the price. I finally understand
+              where my time actually goes. Productivity up 40% in one month."
+            </div>
+            <div class="testi-author">
+              <div
+                class="author-ava"
+                style="background: rgba(34, 211, 238, 0.2); color: var(--cyan)"
+              >
+                MR
+              </div>
+              <div>
+                <div class="author-name">Marcus Rodriguez</div>
+                <div class="author-role">Founder at Stackr</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRICING -->
+    <section id="pricing" class="section-pad">
+      <div class="container">
+        <div class="reveal" style="text-align: center">
+          <div class="section-tag" style="justify-content: center">Pricing</div>
+          <h2 class="section-title">
+            Simple, <span class="gradient-text">honest pricing.</span>
+          </h2>
+          <p class="section-sub" style="margin: 0 auto">
+            Start free. Scale when ready. No hidden fees, ever.
+          </p>
+        </div>
+        <div class="pricing-grid">
+          <div class="pricing-card reveal reveal-delay-1">
+            <div class="price-plan">Starter</div>
+            <div class="price-amount">$0</div>
+            <div class="price-period">forever free</div>
+            <div class="price-desc">
+              Perfect for individuals and solo projects.
+            </div>
+            <ul class="price-features">
+              <li>Up to 50 tasks</li>
+              <li>3 projects</li>
+              <li>Basic analytics</li>
+              <li>Dark mode</li>
+              <li>Mobile app</li>
+            </ul>
+            <button class="price-btn">Get started free</button>
+          </div>
+          <div class="pricing-card featured reveal reveal-delay-2">
+            <div class="featured-badge">✦ Most Popular</div>
+            <div class="price-plan">Pro</div>
+            <div class="price-amount">$12</div>
+            <div class="price-period">per month, billed annually</div>
+            <div class="price-desc">For power users and growing teams.</div>
+            <ul class="price-features">
+              <li>Unlimited tasks</li>
+              <li>Unlimited projects</li>
+              <li>AI task assistant</li>
+              <li>Advanced analytics</li>
+              <li>Team collaboration</li>
+              <li>Priority support</li>
+            </ul>
+            <button class="price-btn featured-btn">Start Pro trial →</button>
+          </div>
+          <div class="pricing-card reveal reveal-delay-3">
+            <div class="price-plan">Enterprise</div>
+            <div class="price-amount">$39</div>
+            <div class="price-period">per seat / month</div>
+            <div class="price-desc">
+              For large teams that need full control.
+            </div>
+            <ul class="price-features">
+              <li>Everything in Pro</li>
+              <li>SSO & SAML</li>
+              <li>Custom integrations</li>
+              <li>SLA guarantee</li>
+              <li>Dedicated manager</li>
+              <li>On-premise option</li>
+            </ul>
+            <button class="price-btn">Contact sales</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+      <div class="cta-box reveal">
+        <div style="font-size: 2.5rem; margin-bottom: 1rem">✦</div>
+        <h2 class="cta-title">
+          Ready to plan like a <span class="gradient-text">pro?</span>
+        </h2>
+        <p class="cta-sub">
+          Join 50,000+ teams already building their best work with Planify.
+        </p>
+        <div
+          style="
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+          "
+        >
+          <button class="btn-primary">
+            <span>Start for free — no card needed →</span>
+          </button>
+          <button class="btn-ghost">See all features</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="footer-logo">✦ Planify</div>
+      <div class="footer-links">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Blog</a>
+        <a href="#">GitHub</a>
+        <a href="#">Twitter</a>
+      </div>
+      <div class="footer-copy">© 2026 Planify. Built with ✦</div>
+    </footer>
+
+    <script>
+      const cursor = document.getElementById("cursor");
+      const ring = document.getElementById("cursor-ring");
+      const glow = document.getElementById("mouse-glow");
+      let mx = 0,
+        my = 0,
+        rx = 0,
+        ry = 0;
+      document.addEventListener("mousemove", (e) => {
+        mx = e.clientX;
+        my = e.clientY;
+        cursor.style.left = mx + "px";
+        cursor.style.top = my + "px";
+        glow.style.left = mx + "px";
+        glow.style.top = my + "px";
+      });
+      function animRing() {
+        rx += (mx - rx) * 0.12;
+        ry += (my - ry) * 0.12;
+        ring.style.left = rx + "px";
+        ring.style.top = ry + "px";
+        requestAnimationFrame(animRing);
+      }
+      animRing();
+      document
+        .querySelectorAll("button,a,.feature-card,.testi-card,.pricing-card")
+        .forEach((el) => {
+          el.addEventListener("mouseenter", () => {
+            cursor.style.transform = "translate(-50%,-50%) scale(2)";
+            ring.style.transform = "translate(-50%,-50%) scale(1.5)";
+            ring.style.borderColor = "rgba(124,110,255,0.6)";
+          });
+          el.addEventListener("mouseleave", () => {
+            cursor.style.transform = "translate(-50%,-50%) scale(1)";
+            ring.style.transform = "translate(-50%,-50%) scale(1)";
+            ring.style.borderColor = "rgba(124,110,255,0.4)";
+          });
+        });
+
+      const obs = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add("visible");
+            }
+          });
+        },
+        { threshold: 0.15 },
+      );
+      document.querySelectorAll(".reveal").forEach((el) => obs.observe(el));
+
+      const nav = document.getElementById("navbar");
+      window.addEventListener("scroll", () => {
+        if (window.scrollY > 60) {
+          nav.style.background = "rgba(5,5,8,0.9)";
+        } else {
+          nav.style.background = "rgba(5,5,8,0.6)";
+        }
+      });
+    </script>
   </body>
 </html>
